@@ -1,8 +1,3 @@
-variable "region" {
-  description = "TencentCloud region to launch resources."
-  default     = ""
-}
-
 # clb instance variables
 variable "clb_id" {
   description = "Id of the CLB."

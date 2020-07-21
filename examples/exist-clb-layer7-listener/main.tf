@@ -1,7 +1,3 @@
-provider "tencentcloud" {
-  region = "ap-guangzhou"
-}
-
 module "clb-layer7-listener" {
   source = "../../../terraform-tencentcloud-clb-layer7-listener"
 

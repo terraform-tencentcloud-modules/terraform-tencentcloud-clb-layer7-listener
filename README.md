@@ -84,7 +84,6 @@ It is possible to use existing CLB listener when specify `listener_id` parameter
 | domain | Domain name of the listener rule. | string | null | no 
 | url | Url of the listener rule. | string | null | no 
 | health_check | The CLB layer4 listener health check settings. Supported fields are `health_check_switch`, `health_check_interval_time`, `health_check_health_num`, `health_check_unhealth_num`, `health_check_http_code`, `health_check_http_path`, `health_check_http_domain` and `health_check_http_method`. | map | {} | no 
-| region | TencentCloud region to launch resources. | string |  | no 
 | clb_id | Id of the CLB. | string |  | yes 
 | listener_name | Name of the CLB listener, and available values can only be Chinese characters, English letters, numbers, underscore and hyphen '-'. | string | tf-modules-clb-listener | no 
 | session_expire_time | Time of session persistence within the CLB listener. NOTES: Available when scheduler is specified as 'WRR'. | number | 0 | no 

@@ -1,8 +1,3 @@
-provider "tencentcloud" {
-  version = ">=1.19.0"
-  region  = var.region != "" ? var.region : null
-}
-
 resource "tencentcloud_clb_listener" "this" {
   count = var.listener_id == "" ? 1 : 0
 
