@@ -1,5 +1,5 @@
 module "clb-instance" {
-  source = "../../../terraform-tencentcloud-clb"
+  source = "terraform-tencentcloud-modules/clb/tencentcloud"
 
   network_type = "INTERNAL"
   clb_name     = "tf-clb-module-internal"
@@ -13,7 +13,7 @@ module "clb-instance" {
 }
 
 module "clb-layer7-listener" {
-  source = "../../../terraform-tencentcloud-clb-layer7-listener"
+  source = "terraform-tencentcloud-modules/clb-layer7-listener/tencentcloud"
 
   clb_id        = module.clb-instance.clb_id
   listener_name = "tf-clb-listener7-module"

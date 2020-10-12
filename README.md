@@ -15,9 +15,9 @@ The following resources are included.
 
 ```hcl
 module "clb-layer7-listener" {
-  source = "../../../terraform-tencentcloud-clb-layer7-listener"
+  source = "terraform-tencentcloud-modules/clb-layer7-listener/tencentcloud"
 
-  clb_id        = module.clb-instance.clb_id
+  clb_id        = "lb-hbj2quqs"
   listener_name = "tf-clb-listener7-module"
   port          = 80
   protocol      = "HTTPS"
