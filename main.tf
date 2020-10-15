@@ -1,8 +1,3 @@
-provider "tencentcloud" {
-  version = ">=1.19.0"
-  region  = var.region != "" ? var.region : null
-}
-
 resource "tencentcloud_clb_listener" "this" {
   count = var.listener_id == "" ? 1 : 0
 
@@ -10,10 +5,10 @@ resource "tencentcloud_clb_listener" "this" {
   listener_name        = var.listener_name
   port                 = var.port
   protocol             = var.protocol
-  certificate_ssl_mode = var.protocol == "HTTPS" ? var.listener_certificate_ssl_mode : null
-  certificate_id       = var.protocol == "HTTPS" ? var.listener_certificate_id : null
-  certificate_ca_id    = var.protocol == "HTTPS" && var.listener_certificate_ssl_mode == "MUTUAL" ? var.listener_certificate_ca_id : null
-  sni_switch           = var.protocol == "HTTPS" ? var.sni_switch : null
+  certificate_ssl_mode = var.protocol == "HTTPS" ? lookup(var.listener_certificate, "certificate_ssl_mode", null) : null
+  certificate_id       = var.protocol == "HTTPS" ? lookup(var.listener_certificate, "certificate_id", null) : null
+  certificate_ca_id    = var.protocol == "HTTPS" && lookup(var.listener_certificate, "certificate_ssl_mode") == "MUTUAL" ? lookup(var.listener_certificate, "certificate_ca_id") : null
+  sni_switch           = var.protocol == "HTTPS" ? lookup(var.listener_certificate, "sni_switch", false) : null
 }
 
 resource "tencentcloud_clb_listener_rule" "this" {
@@ -23,17 +18,17 @@ resource "tencentcloud_clb_listener_rule" "this" {
   listener_id                = local.listener_id
   domain                     = var.domain
   url                        = var.url
-  health_check_switch        = var.health_check_switch
-  health_check_interval_time = var.health_check_interval_time
-  health_check_health_num    = var.health_check_health_num
-  health_check_unhealth_num  = var.health_check_unhealth_num
-  health_check_http_code     = var.health_check_http_code
-  health_check_http_path     = var.health_check_http_path
-  health_check_http_domain   = var.health_check_http_domain
-  health_check_http_method   = var.health_check_http_method
-  certificate_ssl_mode       = var.protocol == "HTTPS" ? var.rule_certificate_ssl_mode : null
-  certificate_id             = var.protocol == "HTTPS" ? var.rule_certificate_id : null
-  certificate_ca_id          = var.protocol == "HTTPS" && var.rule_certificate_ssl_mode == "MUTUAL" ? var.rule_certificate_ca_id : null
+  health_check_switch        = lookup(var.health_check, "health_check_switch", false)
+  health_check_interval_time = lookup(var.health_check, "health_check_interval_time", 5)
+  health_check_health_num    = lookup(var.health_check, "health_check_health_num", 3)
+  health_check_unhealth_num  = lookup(var.health_check, "health_check_unhealth_num", 3)
+  health_check_http_code     = lookup(var.health_check, "health_check_http_code", 31)
+  health_check_http_path     = lookup(var.health_check, "health_check_http_path", null)
+  health_check_http_domain   = lookup(var.health_check, "health_check_http_domain", null)
+  health_check_http_method   = lookup(var.health_check, "health_check_http_method", "HEAD")
+  certificate_ssl_mode       = var.protocol == "HTTPS" ? lookup(var.rule_certificate, "certificate_ssl_mode", null) : null
+  certificate_id             = var.protocol == "HTTPS" ? lookup(var.rule_certificate, "certificate_id") : null
+  certificate_ca_id          = var.protocol == "HTTPS" && lookup(var.rule_certificate, "certificate_ssl_mode") == "MUTUAL" ? lookup(var.rule_certificate, "certificate_ca_id", null) : null
   session_expire_time        = var.scheduler == "WRR" ? var.session_expire_time : null
   scheduler                  = var.scheduler
 }
@@ -80,7 +75,7 @@ locals {
 
   this_listener_info = data.tencentcloud_clb_listeners.this.listener_list
   this_rule_info     = data.tencentcloud_clb_listener_rules.this.rule_list
-  targets            = concat(tencentcloud_clb_attachment.this.*.targets, [""])[0]
+  targets            = concat(tencentcloud_clb_attachment.this.*.targets, [{}])[0]
   backend_instances_read = flatten([
     for _, obj in local.targets : {
       instance_id = lookup(obj, "instance_id")

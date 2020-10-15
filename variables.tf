@@ -1,8 +1,3 @@
-variable "region" {
-  description = "TencentCloud region to launch resources."
-  default     = ""
-}
-
 # clb instance variables
 variable "clb_id" {
   description = "Id of the CLB."
@@ -35,28 +30,20 @@ variable "protocol" {
 }
 
 ## certification variables
-variable "listener_certificate_ssl_mode" {
-  type        = string
-  description = "Type of certificate, and available values are 'UNIDIRECTIONAL', 'MUTUAL'. NOTES: Only supports listeners of 'HTTPS' and must be set when it is available."
-  default     = null
-}
-
-variable "listener_certificate_id" {
-  type        = string
-  description = "Id of the server certificate. NOTES: Only supports listeners of 'HTTPS' and must be set when it is available."
-  default     = null
-}
-
-variable "listener_certificate_ca_id" {
-  type        = string
-  description = "Id of the client certificate. NOTES: Only supports listeners of 'HTTPS' and must be set when the ssl mode is 'MUTUAL'."
-  default     = null
-}
-
-variable "sni_switch" {
-  type        = bool
-  description = "Indicates whether SNI is enabled, and only supported with protocol 'HTTPS'. If enabled, you can set a certificate for each rule, otherwise all rules have a certificate."
-  default     = false
+variable "listener_certificate" {
+  type = object({
+    certificate_ssl_mode = string
+    certificate_id       = string
+    certificate_ca_id    = string
+    sni_switch           = bool
+  })
+  description = "The CLB layer7 listener certificate settings. Supported fields are `certificate_ssl_mode`, `certificate_id`, `certificate_ca_id` and `sni_switch`. NOTES: Only supports listeners of 'HTTPS'."
+  default = {
+    certificate_ssl_mode = null
+    certificate_id       = null
+    certificate_ca_id    = null
+    sni_switch           = false
+  }
 }
 
 # clb listener rule variables
@@ -78,52 +65,28 @@ variable "url" {
   default     = null
 }
 
-variable "health_check_switch" {
-  type        = bool
-  description = "Indicates whether health check is enabled."
-  default     = false
-}
-
-variable "health_check_interval_time" {
-  type        = number
-  description = "Interval time of health check. The value range is 5-300 sec, and the default is 5 sec."
-  default     = 5
-}
-
-variable "health_check_health_num" {
-  type        = number
-  description = "Health threshold of health check, and the default is 3. If a success result is returned for the health check 3 consecutive times, indicates that the forwarding is normal. The value range is 2-10."
-  default     = 3
-}
-
-variable "health_check_unhealth_num" {
-  type        = number
-  description = "Unhealthy threshold of health check, and the default is 3. If the unhealth result is returned 3 consecutive times, indicates that the forwarding is abnormal. The value range is 2-10."
-  default     = 3
-}
-
-variable "health_check_http_code" {
-  type        = number
-  description = "HTTP Status Code. The default is 31 and value range is 1-31. 1 means the return value '1xx' is health. 2 means the return value '2xx' is health. 4 means the return value '3xx' is health. 8 means the return value '4xx' is health. 16 means the return value '5xx' is health. If you want multiple return codes to indicate health, need to add the corresponding values. NOTES: The 'HTTP' health check of the 'TCP' listener only supports specifying one health check status code."
-  default     = 31
-}
-
-variable "health_check_http_path" {
-  type        = string
-  description = "Path of health check. NOTES: Only supports listeners of 'HTTP' and 'HTTPS' protocol."
-  default     = null
-}
-
-variable "health_check_http_domain" {
-  type        = string
-  description = "Domain name of health check. NOTES: Only supports listeners of 'HTTP' and 'HTTPS' protocol."
-  default     = null
-}
-
-variable "health_check_http_method" {
-  type        = string
-  description = "Methods of health check. NOTES: Only supports listeners of 'HTTP' and 'HTTPS' protocol. The default is 'HEAD', the available value are 'HEAD' and 'GET'."
-  default     = "HEAD"
+variable "health_check" {
+  type = object({
+    health_check_switch        = bool
+    health_check_interval_time = number
+    health_check_health_num    = number
+    health_check_unhealth_num  = number
+    health_check_http_code     = number
+    health_check_http_path     = string
+    health_check_http_domain   = string
+    health_check_http_method   = string
+  })
+  description = "The CLB layer4 listener health check settings. Supported fields are `health_check_switch`, `health_check_interval_time`, `health_check_health_num`, `health_check_unhealth_num`, `health_check_http_code`, `health_check_http_path`, `health_check_http_domain` and `health_check_http_method`."
+  default = {
+    health_check_switch        = false
+    health_check_interval_time = 5
+    health_check_health_num    = 3
+    health_check_unhealth_num  = 3
+    health_check_http_code     = 31
+    health_check_http_path     = null
+    health_check_http_domain   = null
+    health_check_http_method   = "HEAD"
+  }
 }
 
 variable "session_expire_time" {
@@ -138,22 +101,18 @@ variable "scheduler" {
   default     = "WRR"
 }
 
-variable "rule_certificate_ssl_mode" {
-  type        = string
-  description = "Type of certificate, and available values are 'UNIDIRECTIONAL', 'MUTUAL'. NOTES: Only supports listeners of 'HTTPS' and must be set when it is available."
-  default     = null
-}
-
-variable "rule_certificate_id" {
-  type        = string
-  description = "Id of the server certificate. NOTES: Only supports listeners of 'HTTPS' and must be set when it is available."
-  default     = null
-}
-
-variable "rule_certificate_ca_id" {
-  type        = string
-  description = "Id of the client certificate. NOTES: Only supports listeners of 'HTTPS' and must be set when the ssl mode is 'MUTUAL'."
-  default     = null
+variable "rule_certificate" {
+  type = object({
+    certificate_ssl_mode = string
+    certificate_id       = string
+    certificate_ca_id    = string
+  })
+  description = "The CLB layer7 listener rule certificate settings. Supported fields are `certificate_ssl_mode`, `certificate_id` and `certificate_ca_id`. NOTES: Only supports listeners of 'HTTPS'."
+  default = {
+    certificate_ssl_mode = null
+    certificate_id       = null
+    certificate_ca_id    = null
+  }
 }
 
 # clb-attachment variables
